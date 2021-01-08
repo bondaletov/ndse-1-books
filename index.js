@@ -49,15 +49,20 @@ app.get('/api/books', function (req, res) {
 
 app.get('/api/books/:id', function (req, res) {
     const {id} = req.params;
-    const book = stor.books.find(b => b.id == id) || {};
-    res.status(200);
-    res.json(book);
+    const book = stor.books.find(b => b.id == id);
+    if (book) {
+        res.status(200);
+        res.json(book);
+    } else {
+        res.status(404);
+        res.json({});
+    }
 });
 
 app.post('/api/books', function (req, res) {
     const {title, description, authors, favorite, fileCover, fileName} = req.body;
     const book = new Book(undefined, title, description, authors, favorite, fileCover, fileName);
-    stor.books.push(book);
+    stor.books.push(book);/api/books/:id
     res.status(201);
     res.json(book);
 });
@@ -68,6 +73,7 @@ app.put('/api/books/:id', function (req, res) {
     if (bookIdx == -1) {
         res.status(404);
         res.end("Not found");
+        return;
     }
     // TODO add validators for required fields
     const book = {
